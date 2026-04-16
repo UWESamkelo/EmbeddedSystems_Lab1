@@ -1,0 +1,104 @@
+/* Title: Creating a blinky LED
+Author: Samkelo Mareka
+Date: 24/01/2026
+Student ID: 24004894
+*/
+#include "mbed.h"
+
+// Initialising the three LEDs as digital outputs
+DigitalOut led1(LED1);
+DigitalOut led2(LED2);
+DigitalOut led3(LED3);
+
+#define SEQUENCE_DELAY 200ms
+#define TICK_DELAY 500ms
+
+// Task 2: Multi-Rate Blinking
+void multi_rate() {
+    int tickCounter = 0; 
+    
+    while (true) {
+        // LED 2: Blinks at the fastest required rate (every 500ms)
+        led2 = !led2;
+
+        // LED 1: Blinks every 1 second (2 base ticks)
+        if (tickCounter % 2 == 0) {
+            led1 = !led1;
+        }
+
+        // LED 3: Blinks every 2 seconds (4 base ticks)
+        if (tickCounter % 4 == 0) {
+            led3 = !led3;
+        }
+
+        // Pause the loop for the base tick duration before checking again
+        ThisThread::sleep_for(TICK_DELAY);
+        tickCounter++;
+    }
+}
+
+// Task 3: Ping-Pong Sequence
+void pingpong() {
+    while (true) {
+        // Step 1: LED 1 On/Off
+        led1 = 1; 
+        ThisThread::sleep_for(SEQUENCE_DELAY); 
+        led1 = 0; 
+        ThisThread::sleep_for(SEQUENCE_DELAY);
+        
+        // Step 2: LED 2 On/Off
+        led2 = 1; 
+        ThisThread::sleep_for(SEQUENCE_DELAY); 
+        led2 = 0; 
+        ThisThread::sleep_for(SEQUENCE_DELAY);
+        
+        // Step 3: LED 3 On/Off
+        led3 = 1; 
+        ThisThread::sleep_for(SEQUENCE_DELAY); 
+        led3 = 0; 
+        ThisThread::sleep_for(SEQUENCE_DELAY);
+        
+        // Step 4: LED 2 On/Off (Repeat)
+        led2 = 1; 
+        ThisThread::sleep_for(SEQUENCE_DELAY); 
+        led2 = 0; 
+        ThisThread::sleep_for(SEQUENCE_DELAY);
+    }
+}
+
+// Task 4: Two-Phase Behavior
+void two_phase() {
+    // PHASE 1: Active Blinking
+    // Loop exactly 5 times to blink all LEDs simultaneously
+    for (int blinkCount = 0; blinkCount < 5; blinkCount++) {
+        led1 = 1; 
+        led2 = 1; 
+        led3 = 1;
+        ThisThread::sleep_for(SEQUENCE_DELAY);
+        
+        led1 = 0; 
+        led2 = 0; 
+        led3 = 0;
+        ThisThread::sleep_for(SEQUENCE_DELAY);
+    }
+    
+    // PHASE 2: Static State
+    // Lock the hardware into the final requested state
+    led1 = 1;
+    led2 = 0;
+    led3 = 0;
+    
+    // Trap the execution in an empty loop so the program doesn't 
+    // restart or exit, holding the LEDs steady indefinitely.
+    while (true) {
+        ThisThread::sleep_for(1000ms); 
+    }
+}
+
+
+int main() {
+    
+    // multi_rate();
+    // pingpong();
+    two_phase();
+}
